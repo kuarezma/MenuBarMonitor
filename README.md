@@ -1,37 +1,54 @@
 # MenuBarMonitor
 
-MenuBarMonitor, macOS için hafif bir menü çubuğu sistem monitörüdür.  
-Üst barda CPU, RAM, termal durum ve bellek yoğunluğu vekilini canlı gösterir; sol tıkla detay paneli, sağ tıkla hızlı menü açılır.
+MenuBarMonitor, macOS menü çubuğunda çalışan hafif bir sistem izleyicisidir.
+CPU, RAM, termal durum ve bellek yoğunluğu bilgisini canlı gösterir.
 
 ![MenuBarMonitor Preview](assets/menubar-preview.png)
 
+## Kimler İçin?
+
+- Mac'inin anlık yükünü üst bardan hızlıca görmek isteyenler
+- Activity Monitor açmadan CPU/RAM/termal durumu takip etmek isteyenler
+- Basit, Dock'ta görünmeyen (`LSUIElement`) bir menü bar aracı arayanlar
+
 ## Özellikler
 
-- Menü çubuğunda canlı kısa gösterim: `Cxx Ryy n M~zz`
-- Renkli durum noktaları (yük durumuna göre)
-- Sol tık: kompakt detay paneli
-- Sağ tık: `Otomatik açıl` (login item) ve `Çık`
-- Çekirdek yükleri: E/P çekirdekleri ayrı görünüm
-- Ölçüm periyodu: 3 saniye
+- Menü çubuğunda kısa canlı etiket: `Cxx Ryy n M~zz`
+- Renkli durum noktaları
+- Sol tık ile detay paneli
+- Sağ tık ile:
+  - `Otomatik açıl` (login item)
+  - `Çık`
+- E/P çekirdek yüklerini ayrı satırlarda görüntüleme
+- 3 saniyede bir yenilenen örnekleme
 
-## Ekran Gösterimi
+## Menü Etiketi Ne Anlama Geliyor?
 
-Menü çubuğu etiketi:
+- `C`: toplam CPU kullanım yüzdesi
+- `R`: RAM kullanım yüzdesi
+- `n/f/s/k`: termal durum
+  - `n`: nominal
+  - `f`: fair
+  - `s`: serious
+  - `k`: critical
+- `M~`: bellek yoğunluğu vekili (gerçek DRAM bant genişliği değildir)
 
-- `C`: toplam CPU yüzde
-- `R`: RAM kullanım yüzde
-- `n/f/s/k`: termal durum (nominal/fair/serious/critical)
-- `M~`: bellek yoğunluğu vekili (gerçek bellek bant genişliği değildir)
+## Hızlı Başlangıç (Hiç Bilmeyenler İçin)
 
-## Gereksinimler
+### Seçenek 1: GitHub'dan indirip Xcode ile çalıştır
 
-- macOS 14+
-- Xcode (tam kurulum)
+1. Bu repoya gir: [MenuBarMonitor](https://github.com/kuarezma/MenuBarMonitor)
+2. Yeşil `Code` butonuna tıkla
+3. `Download ZIP` seç
+4. ZIP dosyasını aç
+5. `MenuBarMonitor.xcodeproj` dosyasına çift tıkla
+6. Xcode açılınca üstte hedef olarak `My Mac` seçili olsun
+7. `Run` (veya `Cmd + R`) ile çalıştır
 
-## Kurulum (Kaynak Koddan)
+### Seçenek 2: Terminal ile klonla ve derle
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/kuarezma/MenuBarMonitor.git
 cd MenuBarMonitor
 xcodebuild -project "MenuBarMonitor.xcodeproj" \
   -scheme "MenuBarMonitor" \
@@ -44,7 +61,7 @@ Derlenen uygulama:
 
 - `/tmp/MenuBarMonitor-DD/Build/Products/Release/MenuBarMonitor.app`
 
-İsterseniz masaüstüne kopyalayın:
+Masaüstüne kopyalayıp başlatmak için:
 
 ```bash
 rm -rf "$HOME/Desktop/MenuBarMonitor.app"
@@ -52,13 +69,35 @@ ditto "/tmp/MenuBarMonitor-DD/Build/Products/Release/MenuBarMonitor.app" "$HOME/
 open "$HOME/Desktop/MenuBarMonitor.app"
 ```
 
-## Kullanım
+## Gereksinimler
+
+- macOS 14 veya üzeri
+- Xcode (tam kurulum, App Store sürümü)
+
+## Günlük Kullanım
 
 - Sol tık: detay panelini aç/kapat
-- Sağ tık: `Otomatik açıl` seçeneğini aç/kapat, uygulamayı kapat
+- Sağ tık: otomatik açıl seçeneği + çıkış
+- Uygulama Dock'ta görünmez; menü çubuğunda çalışır
 
-## Notlar
+## Sık Sorulan / Sorun Giderme
 
-- Uygulama `LSUIElement` olarak çalışır; Dock’ta görünmez.
-- Apple Silicon’da kullanıcı alanından güvenilir çekirdek frekansı (MHz/GHz) alınamadığı için frekans uydurulmaz.
-- Termal gösterim derece (°C) değil, sistemin termal durum bilgisidir.
+### "Açılmıyor" veya "izin" uyarısı alıyorum
+
+- Uygulamayı ilk açışta macOS güvenlik uyarısı verebilir.
+- Gerekirse `System Settings > Privacy & Security` altında açılmasına izin verin.
+
+### Yeniden başlatınca CPU bir süre yüksek görünüyor, normal mi?
+
+- Evet, çoğu zaman normaldir.
+- Spotlight, iCloud, Photos analizleri gibi açılış sonrası görevler geçici yük oluşturur.
+
+### Neden gerçek sıcaklık (°C) veya sabit GHz göstermiyor?
+
+- Bu uygulama SMC sensörlerinden direkt °C okumaz.
+- Apple Silicon tarafında kullanıcı alanından güvenilir anlık çekirdek frekansı sınırlıdır.
+- Bu yüzden yanıltıcı değer üretmek yerine güvenilir metrikler gösterilir.
+
+## Katkı
+
+PR ve issue açabilirsiniz. Küçük iyileştirmeler, UI düzenlemeleri ve ölçüm doğruluğu geri bildirimleri memnuniyetle karşılanır.
