@@ -3,6 +3,8 @@
 MenuBarMonitor, macOS için hafif bir menü çubuğu sistem monitörüdür.  
 Üst barda CPU, RAM, termal durum ve bellek yoğunluğu vekilini canlı gösterir; sol tıkla detay paneli, sağ tıkla hızlı menü açılır.
 
+![MenuBarMonitor Preview](assets/menubar-preview.png)
+
 ## Özellikler
 
 - Menü çubuğunda canlı kısa gösterim: `Cxx Ryy n M~zz`
