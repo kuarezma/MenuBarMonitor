@@ -7,7 +7,7 @@ struct MonitorDetailView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Canlı Sistem")
+            Text(L10n.t("detail.liveSystem"))
                 .font(.headline)
 
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 8) {
@@ -30,7 +30,7 @@ struct MonitorDetailView: View {
                 }
             }
 
-            Text("Çekirdek Yükleri")
+            Text(L10n.t("detail.coreLoads"))
                 .font(.subheadline.weight(.semibold))
 
             VStack(spacing: 8) {
@@ -49,22 +49,22 @@ struct MonitorDetailView: View {
     private var topFiveRows: [TopFiveRow] {
         [
             TopFiveRow(
-                title: "CPU kullanımı",
+                title: L10n.t("detail.cpuUsage"),
                 value: pctOrDash(m.overallCpuPercent),
                 color: loadColor(m.overallCpuPercent)
             ),
             TopFiveRow(
-                title: "RAM kullanımı",
+                title: L10n.t("detail.ramUsage"),
                 value: pctOrDash(m.ramUsedPercent),
                 color: loadColor(m.ramUsedPercent)
             ),
             TopFiveRow(
-                title: "Bellek yoğunluğu",
+                title: L10n.t("detail.memoryPressure"),
                 value: pctMemoryProxy(m.memoryProxyPercent),
                 color: loadColor(m.memoryProxyPercent)
             ),
             TopFiveRow(
-                title: "Termal durum",
+                title: L10n.t("detail.thermalState"),
                 value: thermalValueLine,
                 color: thermalColor(m.thermalState)
             ),

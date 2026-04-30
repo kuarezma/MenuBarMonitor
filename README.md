@@ -19,6 +19,7 @@ CPU, RAM, termal durum ve bellek yoğunluğu bilgisini canlı gösterir.
 - Sağ tık ile:
   - `Otomatik açıl` (login item)
   - `Çık`
+- Sistem dili algılama: Türkçe ve İngilizce arayüz metinleri (`Localizable.strings`)
 - E/P çekirdek yüklerini ayrı satırlarda görüntüleme
 - 3 saniyede bir yenilenen örnekleme
 

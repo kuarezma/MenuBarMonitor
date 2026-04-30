@@ -1,0 +1,17 @@
+"menu.autoLaunch" = "Launch at login";
+"menu.quit" = "Quit";
+"detail.liveSystem" = "Live System";
+"detail.coreLoads" = "Core Loads";
+"detail.cpuUsage" = "CPU usage";
+"detail.ramUsage" = "RAM usage";
+"detail.memoryPressure" = "Memory pressure";
+"detail.thermalState" = "Thermal state";
+"thermal.low" = "Low";
+"thermal.medium" = "Medium";
+"thermal.high" = "High";
+"thermal.footnote.nominal" = "ProcessInfo.thermalState: nominal. °C is not shown (no direct SMC read).";
+"thermal.footnote.fair" = "ProcessInfo.thermalState: fair.";
+"thermal.footnote.serious" = "ProcessInfo.thermalState: serious; cooling/throttling risk increases.";
+"thermal.footnote.critical" = "ProcessInfo.thermalState: critical; system may apply aggressive throttling.";
+"thermal.footnote.unknown" = "Unknown thermal state.";
+"menu.thermalLegend" = "Thermal letter in menu bar: n=nominal, f=fair, s=serious, k=critical. Real °C is not shown.";

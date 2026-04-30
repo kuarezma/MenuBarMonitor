@@ -84,15 +84,35 @@ enum SystemMetrics {
     private static func thermalMapping(_ state: ProcessInfo.ThermalState) -> (labelTR: String, heat0to100: Int, footnote: String) {
         switch state {
         case .nominal:
-            return ("Düşük", 15, "ProcessInfo.thermalState: nominal. °C gösterilmez (SMC yok).")
+            return (
+                L10n.t("thermal.low"),
+                15,
+                L10n.t("thermal.footnote.nominal")
+            )
         case .fair:
-            return ("Orta", 40, "ProcessInfo.thermalState: fair.")
+            return (
+                L10n.t("thermal.medium"),
+                40,
+                L10n.t("thermal.footnote.fair")
+            )
         case .serious:
-            return ("Yüksek", 70, "ProcessInfo.thermalState: serious; soğutma/throttling riski artar.")
+            return (
+                L10n.t("thermal.high"),
+                70,
+                L10n.t("thermal.footnote.serious")
+            )
         case .critical:
-            return ("Yüksek", 95, "ProcessInfo.thermalState: critical; sistem agresif kısıtlama yapabilir.")
+            return (
+                L10n.t("thermal.high"),
+                95,
+                L10n.t("thermal.footnote.critical")
+            )
         @unknown default:
-            return ("Orta", 50, "Bilinmeyen termal durum.")
+            return (
+                L10n.t("thermal.medium"),
+                50,
+                L10n.t("thermal.footnote.unknown")
+            )
         }
     }
 
@@ -193,5 +213,11 @@ extension SystemMetricsSnapshot {
 
     /// Menü etiketindeki tek harfli termal kodun açıklaması.
     static let menuThermalLegendTR =
-        "Menü çubuğunda termal harf: n=nominal, f=fair (uygun), s=serious (ciddi), k=critical (kritik). Gerçek °C yoktur."
+        L10n.t("menu.thermalLegend")
+}
+
+enum L10n {
+    static func t(_ key: String) -> String {
+        NSLocalizedString(key, comment: "")
+    }
 }

@@ -1,0 +1,17 @@
+"menu.autoLaunch" = "Otomatik açıl";
+"menu.quit" = "Çık";
+"detail.liveSystem" = "Canlı Sistem";
+"detail.coreLoads" = "Çekirdek Yükleri";
+"detail.cpuUsage" = "CPU kullanımı";
+"detail.ramUsage" = "RAM kullanımı";
+"detail.memoryPressure" = "Bellek yoğunluğu";
+"detail.thermalState" = "Termal durum";
+"thermal.low" = "Düşük";
+"thermal.medium" = "Orta";
+"thermal.high" = "Yüksek";
+"thermal.footnote.nominal" = "ProcessInfo.thermalState: nominal. °C gösterilmez (SMC yok).";
+"thermal.footnote.fair" = "ProcessInfo.thermalState: fair.";
+"thermal.footnote.serious" = "ProcessInfo.thermalState: serious; soğutma/throttling riski artar.";
+"thermal.footnote.critical" = "ProcessInfo.thermalState: critical; sistem agresif kısıtlama yapabilir.";
+"thermal.footnote.unknown" = "Bilinmeyen termal durum.";
+"menu.thermalLegend" = "Menü çubuğunda termal harf: n=nominal, f=fair (uygun), s=serious (ciddi), k=critical (kritik). Gerçek °C yoktur.";

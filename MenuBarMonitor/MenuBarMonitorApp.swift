@@ -73,7 +73,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         let menu = NSMenu()
         let autoLaunch = NSMenuItem(
-            title: "Otomatik açıl",
+            title: L10n.t("menu.autoLaunch"),
             action: #selector(toggleLaunchAtLogin),
             keyEquivalent: ""
         )
@@ -83,7 +83,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         menu.addItem(.separator())
 
-        let quit = NSMenuItem(title: "Çık", action: #selector(quitApp), keyEquivalent: "q")
+        let quit = NSMenuItem(title: L10n.t("menu.quit"), action: #selector(quitApp), keyEquivalent: "q")
         quit.target = self
         menu.addItem(quit)
 
