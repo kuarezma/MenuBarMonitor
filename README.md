@@ -80,6 +80,34 @@ open "$HOME/Desktop/MenuBarMonitor.app"
 - Sağ tık: otomatik açıl seçeneği + çıkış
 - Uygulama Dock'ta görünmez; menü çubuğunda çalışır
 
+## .app Dosyasını Güvenli Paylaşma (Release)
+
+Projede hazır gelen script ile tek komutta:
+
+- Release build alır
+- `.app` dosyasını zipler
+- SHA256 checksum üretir
+- `gh` girişiniz varsa GitHub Release'e yükler
+
+Komut:
+
+```bash
+./scripts/release.sh v1.0.0
+```
+
+Üretilen dosyalar:
+
+- `build/releases/v1.0.0/MenuBarMonitor-v1.0.0.zip`
+- `build/releases/v1.0.0/MenuBarMonitor-v1.0.0.zip.sha256.txt`
+
+Checksum doğrulama (indiren kullanıcı için):
+
+```bash
+shasum -a 256 MenuBarMonitor-v1.0.0.zip
+```
+
+Çıktıyı `.sha256.txt` içindeki değerle karşılaştırın.
+
 ## Sık Sorulan / Sorun Giderme
 
 ### "Açılmıyor" veya "izin" uyarısı alıyorum
