@@ -1,7 +1,11 @@
+import AppKit
 import SwiftUI
 
 struct MonitorDetailView: View {
     @ObservedObject var model: MonitorModel
+
+    @State private var ramPurgeBusy = false
+    @State private var ramPurgeStatus: String?
 
     private var m: SystemMetricsSnapshot { model.systemMetrics }
 
@@ -12,21 +16,7 @@ struct MonitorDetailView: View {
 
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 8) {
                 ForEach(topFiveRows) { row in
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(row.title)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                            .lineLimit(1)
-                        Text(row.value)
-                            .font(.system(size: 20, weight: .bold, design: .rounded))
-                            .foregroundStyle(row.color)
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.8)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.vertical, 8)
-                    .padding(.horizontal, 10)
-                    .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 10))
+                    metricGridCell(row)
                 }
             }
 
@@ -43,27 +33,31 @@ struct MonitorDetailView: View {
             }
         }
         .padding(10)
-        .frame(minWidth: 340, minHeight: 330)
+        .frame(minWidth: 340, minHeight: 360)
     }
 
     private var topFiveRows: [TopFiveRow] {
         [
             TopFiveRow(
+                kind: .cpu,
                 title: L10n.t("detail.cpuUsage"),
                 value: pctOrDash(m.overallCpuPercent),
                 color: loadColor(m.overallCpuPercent)
             ),
             TopFiveRow(
+                kind: .ram,
                 title: L10n.t("detail.ramUsage"),
                 value: pctOrDash(m.ramUsedPercent),
                 color: loadColor(m.ramUsedPercent)
             ),
             TopFiveRow(
+                kind: .memoryPressure,
                 title: L10n.t("detail.memoryPressure"),
                 value: pctMemoryProxy(m.memoryProxyPercent),
                 color: loadColor(m.memoryProxyPercent)
             ),
             TopFiveRow(
+                kind: .thermal,
                 title: L10n.t("detail.thermalState"),
                 value: thermalValueLine,
                 color: thermalColor(m.thermalState)
@@ -96,6 +90,95 @@ struct MonitorDetailView: View {
     }
 
     @ViewBuilder
+    private func metricGridCell(_ row: TopFiveRow) -> some View {
+        switch row.kind {
+        case .ram:
+            ramUsageCell(row)
+        default:
+            standardMetricCell(row)
+        }
+    }
+
+    private func standardMetricCell(_ row: TopFiveRow) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(row.title)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .lineLimit(1)
+            Text(row.value)
+                .font(.system(size: 20, weight: .bold, design: .rounded))
+                .foregroundStyle(row.color)
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.vertical, 8)
+        .padding(.horizontal, 10)
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 10))
+    }
+
+    private func ramUsageCell(_ row: TopFiveRow) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack(alignment: .firstTextBaseline, spacing: 8) {
+                Text(row.title)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                Spacer(minLength: 4)
+                Button(ramPurgeBusy ? L10n.t("ram.purge.working") : L10n.t("ram.clean")) {
+                    runRamPurge()
+                }
+                .disabled(ramPurgeBusy)
+                .controlSize(.mini)
+            }
+            Text(row.value)
+                .font(.system(size: 20, weight: .bold, design: .rounded))
+                .foregroundStyle(row.color)
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
+            if let status = ramPurgeStatus, !status.isEmpty {
+                Text(status)
+                    .font(.caption2)
+                    .foregroundStyle(ramPurgeStatusColor(status))
+                    .lineLimit(2)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.vertical, 8)
+        .padding(.horizontal, 10)
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 10))
+    }
+
+    private func ramPurgeStatusColor(_ status: String) -> Color {
+        if status.contains("✓") { return .green }
+        return .orange
+    }
+
+    private func runRamPurge() {
+        ramPurgeBusy = true
+        ramPurgeStatus = nil
+        let source = #"do shell script "purge" with administrator privileges"#
+        DispatchQueue.global(qos: .userInitiated).async {
+            var errorDict: NSDictionary?
+            let script = NSAppleScript(source: source)
+            _ = script?.executeAndReturnError(&errorDict)
+            DispatchQueue.main.async {
+                ramPurgeBusy = false
+                if let err = errorDict {
+                    let msg = err[NSAppleScript.errorMessage] as? String ?? L10n.t("ram.purge.errorUnknown")
+                    if msg.localizedCaseInsensitiveContains("canceled") || msg.localizedCaseInsensitiveContains("iptal") {
+                        ramPurgeStatus = L10n.t("ram.purge.canceled")
+                    } else {
+                        ramPurgeStatus = String(format: L10n.t("ram.purge.errorFormat"), msg)
+                    }
+                } else {
+                    ramPurgeStatus = L10n.t("ram.purge.success")
+                }
+            }
+        }
+    }
+
     private func coreCell(label: String, value: String, color: Color) -> some View {
         HStack {
             Text(label)
@@ -141,8 +224,16 @@ struct MonitorDetailView: View {
     }
 }
 
+private enum MetricKind: String {
+    case cpu
+    case ram
+    case memoryPressure
+    case thermal
+}
+
 private struct TopFiveRow: Identifiable {
-    var id: String { title }
+    var id: MetricKind { kind }
+    let kind: MetricKind
     let title: String
     let value: String
     let color: Color

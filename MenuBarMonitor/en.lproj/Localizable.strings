@@ -15,3 +15,9 @@
 "thermal.footnote.critical" = "ProcessInfo.thermalState: critical; system may apply aggressive throttling.";
 "thermal.footnote.unknown" = "Unknown thermal state.";
 "menu.thermalLegend" = "Thermal letter in menu bar: n=nominal, f=fair, s=serious, k=critical. Real °C is not shown.";
+"ram.clean" = "Clean";
+"ram.purge.working" = "Working…";
+"ram.purge.success" = "✓ RAM cleaned.";
+"ram.purge.canceled" = "Canceled or no password.";
+"ram.purge.errorFormat" = "Error: %@";
+"ram.purge.errorUnknown" = "Unknown error";

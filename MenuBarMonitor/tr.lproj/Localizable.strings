@@ -15,3 +15,9 @@
 "thermal.footnote.critical" = "ProcessInfo.thermalState: critical; sistem agresif kısıtlama yapabilir.";
 "thermal.footnote.unknown" = "Bilinmeyen termal durum.";
 "menu.thermalLegend" = "Menü çubuğunda termal harf: n=nominal, f=fair (uygun), s=serious (ciddi), k=critical (kritik). Gerçek °C yoktur.";
+"ram.clean" = "Temizle";
+"ram.purge.working" = "Çalışıyor…";
+"ram.purge.success" = "✓ RAM temizlendi.";
+"ram.purge.canceled" = "İptal edildi veya şifre verilmedi.";
+"ram.purge.errorFormat" = "Hata: %@";
+"ram.purge.errorUnknown" = "Bilinmeyen hata";

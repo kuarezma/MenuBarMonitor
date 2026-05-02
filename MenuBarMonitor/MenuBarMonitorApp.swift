@@ -31,9 +31,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func setupPopover() {
         popover.behavior = .transient
-        popover.contentSize = NSSize(width: 360, height: 360)
+        popover.contentSize = NSSize(width: 360, height: 380)
         popover.contentViewController = NSHostingController(
-            rootView: MonitorDetailView(model: model).frame(minWidth: 340, minHeight: 330)
+            rootView: MonitorDetailView(model: model).frame(minWidth: 340, minHeight: 360)
         )
     }
 
