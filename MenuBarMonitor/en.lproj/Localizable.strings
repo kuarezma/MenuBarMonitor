@@ -21,3 +21,9 @@
 "ram.purge.canceled" = "Canceled or no password.";
 "ram.purge.errorFormat" = "Error: %@";
 "ram.purge.errorUnknown" = "Unknown error";
+"quitAll.button" = "Quit all applications";
+"quitAll.hint" = "Closes Dock apps normally (save dialogs may appear). Finder and MenuBarMonitor stay open.";
+"quitAll.confirmTitle" = "Quit all applications?";
+"quitAll.confirmMessage" = "All regular (Dock) applications will be asked to quit. Unsaved changes in other apps may prompt you to save.";
+"quitAll.confirmAction" = "Quit all";
+"quitAll.cancel" = "Cancel";

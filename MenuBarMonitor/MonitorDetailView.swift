@@ -6,6 +6,8 @@ struct MonitorDetailView: View {
 
     @State private var ramPurgeBusy = false
     @State private var ramPurgeStatus: String?
+    @State private var ramPurgeClearTask: Task<Void, Never>?
+    @State private var showQuitAllConfirmation = false
 
     private var m: SystemMetricsSnapshot { model.systemMetrics }
 
@@ -31,9 +33,38 @@ struct MonitorDetailView: View {
                     }
                 }
             }
+
+            Divider()
+                .padding(.top, 4)
+
+            VStack(alignment: .leading, spacing: 6) {
+                Text(L10n.t("quitAll.hint"))
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                Button {
+                    showQuitAllConfirmation = true
+                } label: {
+                    Text(L10n.t("quitAll.button"))
+                }
+                .buttonStyle(NeonActionButtonStyle(palette: .shutdownWarm, isDimmed: false))
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
         .padding(10)
-        .frame(minWidth: 340, minHeight: 360)
+        .frame(minWidth: 340, minHeight: 420)
+        .confirmationDialog(
+            L10n.t("quitAll.confirmTitle"),
+            isPresented: $showQuitAllConfirmation,
+            titleVisibility: .visible
+        ) {
+            Button(L10n.t("quitAll.confirmAction"), role: .destructive) {
+                quitAllRegularUserApps()
+            }
+            Button(L10n.t("quitAll.cancel"), role: .cancel) {}
+        } message: {
+            Text(L10n.t("quitAll.confirmMessage"))
+        }
     }
 
     private var topFiveRows: [TopFiveRow] {
@@ -125,11 +156,13 @@ struct MonitorDetailView: View {
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
                 Spacer(minLength: 4)
-                Button(ramPurgeBusy ? L10n.t("ram.purge.working") : L10n.t("ram.clean")) {
+                Button {
                     runRamPurge()
+                } label: {
+                    Text(ramPurgeBusy ? L10n.t("ram.purge.working") : L10n.t("ram.clean"))
                 }
                 .disabled(ramPurgeBusy)
-                .controlSize(.mini)
+                .buttonStyle(NeonActionButtonStyle(palette: .memoryCool, isDimmed: ramPurgeBusy, compact: true))
             }
             Text(row.value)
                 .font(.system(size: 20, weight: .bold, design: .rounded))
@@ -142,12 +175,17 @@ struct MonitorDetailView: View {
                     .foregroundStyle(ramPurgeStatusColor(status))
                     .lineLimit(2)
                     .fixedSize(horizontal: false, vertical: true)
+                    .transition(.asymmetric(
+                        insertion: .scale(scale: 0.92).combined(with: .opacity),
+                        removal: .opacity
+                    ))
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.vertical, 8)
         .padding(.horizontal, 10)
         .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 10))
+        .animation(.spring(response: 0.38, dampingFraction: 0.82), value: ramPurgeStatus)
     }
 
     private func ramPurgeStatusColor(_ status: String) -> Color {
@@ -155,7 +193,22 @@ struct MonitorDetailView: View {
         return .orange
     }
 
+    private func quitAllRegularUserApps() {
+        let currentPID = NSRunningApplication.current.processIdentifier
+        let ownBundleID = Bundle.main.bundleIdentifier
+        for app in NSWorkspace.shared.runningApplications {
+            guard app.processIdentifier != currentPID else { continue }
+            guard app.activationPolicy == .regular else { continue }
+            guard !app.isTerminated else { continue }
+            if app.bundleIdentifier == "com.apple.finder" { continue }
+            if let bid = app.bundleIdentifier, let ownBundleID, bid == ownBundleID { continue }
+            _ = app.terminate()
+        }
+    }
+
     private func runRamPurge() {
+        ramPurgeClearTask?.cancel()
+        ramPurgeClearTask = nil
         ramPurgeBusy = true
         ramPurgeStatus = nil
         let source = #"do shell script "purge" with administrator privileges"#
@@ -168,14 +221,35 @@ struct MonitorDetailView: View {
                 if let err = errorDict {
                     let msg = err[NSAppleScript.errorMessage] as? String ?? L10n.t("ram.purge.errorUnknown")
                     if msg.localizedCaseInsensitiveContains("canceled") || msg.localizedCaseInsensitiveContains("iptal") {
-                        ramPurgeStatus = L10n.t("ram.purge.canceled")
+                        let text = L10n.t("ram.purge.canceled")
+                        ramPurgeStatus = text
+                        scheduleRamPurgeStatusAutoClear(expected: text)
                     } else {
-                        ramPurgeStatus = String(format: L10n.t("ram.purge.errorFormat"), msg)
+                        let text = String(format: L10n.t("ram.purge.errorFormat"), msg)
+                        ramPurgeStatus = text
+                        scheduleRamPurgeStatusAutoClear(expected: text)
                     }
                 } else {
-                    ramPurgeStatus = L10n.t("ram.purge.success")
+                    let text = L10n.t("ram.purge.success")
+                    ramPurgeStatus = text
+                    scheduleRamPurgeStatusAutoClear(expected: text)
                 }
             }
+        }
+    }
+
+    private func scheduleRamPurgeStatusAutoClear(expected: String, delaySeconds: Double = 5) {
+        ramPurgeClearTask?.cancel()
+        ramPurgeClearTask = Task { @MainActor in
+            let nanos = UInt64(delaySeconds * 1_000_000_000)
+            try? await Task.sleep(nanoseconds: nanos)
+            guard !Task.isCancelled else { return }
+            if ramPurgeStatus == expected {
+                withAnimation(.easeOut(duration: 0.35)) {
+                    ramPurgeStatus = nil
+                }
+            }
+            ramPurgeClearTask = nil
         }
     }
 
@@ -220,6 +294,102 @@ struct MonitorDetailView: View {
         case .serious: return .orange
         case .critical: return .red
         @unknown default: return .secondary
+        }
+    }
+}
+
+// MARK: - Neon action buttons
+
+private enum NeonPalette {
+    case memoryCool
+    case shutdownWarm
+
+    var gradientColors: [Color] {
+        switch self {
+        case .memoryCool:
+            return [
+                Color(red: 0.25, green: 0.55, blue: 1.0),
+                Color(red: 0.45, green: 0.35, blue: 1.0),
+                Color(red: 0.15, green: 0.82, blue: 0.88),
+                Color(red: 0.35, green: 0.95, blue: 0.55),
+                Color(red: 0.25, green: 0.55, blue: 1.0),
+            ]
+        case .shutdownWarm:
+            return [
+                Color(red: 1.0, green: 0.45, blue: 0.2),
+                Color(red: 1.0, green: 0.25, blue: 0.55),
+                Color(red: 0.95, green: 0.75, blue: 0.2),
+                Color(red: 1.0, green: 0.35, blue: 0.15),
+                Color(red: 1.0, green: 0.45, blue: 0.2),
+            ]
+        }
+    }
+
+    var glowColor: Color {
+        switch self {
+        case .memoryCool: return .cyan
+        case .shutdownWarm: return .orange
+        }
+    }
+}
+
+private struct NeonActionButtonStyle: ButtonStyle {
+    var palette: NeonPalette
+    var isDimmed: Bool
+    var compact: Bool = false
+
+    func makeBody(configuration: Configuration) -> some View {
+        let hPad: CGFloat = compact ? 8 : 14
+        let vPad: CGFloat = compact ? 4 : 8
+        let font: Font = compact
+            ? .system(size: 10, weight: .bold, design: .rounded)
+            : .system(size: 12, weight: .bold, design: .rounded)
+        let corner: CGFloat = compact ? 8 : 11
+
+        return TimelineView(.animation(minimumInterval: 1.0 / 36.0, paused: false)) { timeline in
+            let t = timeline.date.timeIntervalSinceReferenceDate
+            let spinDegrees = (t.truncatingRemainder(dividingBy: compact ? 3.6 : 4.8) / (compact ? 3.6 : 4.8)) * 360.0
+            let glowPulse = (sin(t * 2.4) + 1) * 0.5
+
+            configuration.label
+                .font(font)
+                .foregroundStyle(.white)
+                .shadow(color: .black.opacity(0.35), radius: 0, y: 1)
+                .padding(.horizontal, hPad)
+                .padding(.vertical, vPad)
+                .background {
+                    ZStack {
+                        RoundedRectangle(cornerRadius: corner, style: .continuous)
+                            .fill(
+                                AngularGradient(
+                                    gradient: Gradient(colors: palette.gradientColors),
+                                    center: .center,
+                                    angle: .degrees(spinDegrees)
+                                )
+                            )
+                            .opacity(isDimmed ? 0.52 : 1)
+                        RoundedRectangle(cornerRadius: corner, style: .continuous)
+                            .strokeBorder(
+                                LinearGradient(
+                                    colors: [
+                                        .white.opacity(0.55),
+                                        .white.opacity(0.08),
+                                        .white.opacity(0.35),
+                                    ],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                ),
+                                lineWidth: 1
+                            )
+                    }
+                }
+                .shadow(
+                    color: palette.glowColor.opacity(0.32 + glowPulse * 0.38),
+                    radius: 5 + glowPulse * 9,
+                    y: 2
+                )
+                .scaleEffect(configuration.isPressed ? (compact ? 0.93 : 0.96) : 1)
+                .animation(.spring(response: 0.28, dampingFraction: 0.68), value: configuration.isPressed)
         }
     }
 }

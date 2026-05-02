@@ -21,3 +21,9 @@
 "ram.purge.canceled" = "İptal edildi veya şifre verilmedi.";
 "ram.purge.errorFormat" = "Hata: %@";
 "ram.purge.errorUnknown" = "Bilinmeyen hata";
+"quitAll.button" = "Tüm uygulamaları kapat";
+"quitAll.hint" = "Dock’taki uygulamaları normal şekilde kapatır (kaydet penceresi çıkabilir). Finder ve MenuBarMonitor açık kalır.";
+"quitAll.confirmTitle" = "Tüm uygulamalar kapatılsın mı?";
+"quitAll.confirmMessage" = "Tüm normal (Dock) uygulamalarına çıkış istenecek. Kaydedilmemiş belgelerde kaydetme uyarısı çıkabilir.";
+"quitAll.confirmAction" = "Tümünü kapat";
+"quitAll.cancel" = "İptal";
