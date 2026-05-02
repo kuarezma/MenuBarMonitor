@@ -1,6 +1,13 @@
 import AppKit
 import SwiftUI
 
+private enum PopoverChrome {
+    /// Opaque popover panel (not vibrancy / material).
+    static let panelBackground = Color(red: 0.10, green: 0.10, blue: 0.12)
+    /// Slightly lighter tiles on the panel.
+    static let cardBackground = Color(red: 0.17, green: 0.17, blue: 0.20)
+}
+
 struct MonitorDetailView: View {
     @ObservedObject var model: MonitorModel
 
@@ -34,7 +41,10 @@ struct MonitorDetailView: View {
                 }
             }
 
-            Divider()
+            Rectangle()
+                .fill(Color.white.opacity(0.14))
+                .frame(maxWidth: .infinity)
+                .frame(height: 1)
                 .padding(.top, 4)
 
             VStack(alignment: .leading, spacing: 6) {
@@ -53,6 +63,8 @@ struct MonitorDetailView: View {
         }
         .padding(10)
         .frame(minWidth: 340, minHeight: 420)
+        .background(PopoverChrome.panelBackground)
+        .preferredColorScheme(.dark)
         .confirmationDialog(
             L10n.t("quitAll.confirmTitle"),
             isPresented: $showQuitAllConfirmation,
@@ -145,7 +157,7 @@ struct MonitorDetailView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.vertical, 8)
         .padding(.horizontal, 10)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 10))
+        .background(PopoverChrome.cardBackground, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
     }
 
     private func ramUsageCell(_ row: TopFiveRow) -> some View {
@@ -184,7 +196,7 @@ struct MonitorDetailView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.vertical, 8)
         .padding(.horizontal, 10)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 10))
+        .background(PopoverChrome.cardBackground, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
         .animation(.spring(response: 0.38, dampingFraction: 0.82), value: ramPurgeStatus)
     }
 
@@ -265,7 +277,7 @@ struct MonitorDetailView: View {
         }
         .padding(.vertical, 6)
         .padding(.horizontal, 10)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 10))
+        .background(PopoverChrome.cardBackground, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
     }
 
     private func pctOrDash(_ v: Double?) -> String {

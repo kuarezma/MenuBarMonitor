@@ -31,6 +31,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func setupPopover() {
         popover.behavior = .transient
+        popover.appearance = NSAppearance(named: .darkAqua)
         popover.contentSize = NSSize(width: 360, height: 440)
         popover.contentViewController = NSHostingController(
             rootView: MonitorDetailView(model: model).frame(minWidth: 340, minHeight: 420)
