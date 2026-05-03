@@ -358,7 +358,8 @@ private struct NeonActionButtonStyle: ButtonStyle {
             : .system(size: 12, weight: .bold, design: .rounded)
         let corner: CGFloat = compact ? 8 : 11
 
-        return TimelineView(.animation(minimumInterval: 1.0 / 36.0, paused: false)) { timeline in
+        // ~12 Hz: yeterince akıcı; 36 Hz’e göre popover açıkken CPU/GPU yükü daha düşük.
+        return TimelineView(.animation(minimumInterval: 1.0 / 12.0, paused: false)) { timeline in
             let t = timeline.date.timeIntervalSinceReferenceDate
             let spinDegrees = (t.truncatingRemainder(dividingBy: compact ? 3.6 : 4.8) / (compact ? 3.6 : 4.8)) * 360.0
             let glowPulse = (sin(t * 2.4) + 1) * 0.5

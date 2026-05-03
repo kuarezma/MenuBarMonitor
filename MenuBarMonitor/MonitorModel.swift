@@ -27,7 +27,7 @@ final class MonitorModel: ObservableObject {
     @Published private(set) var statusBarDisplayLabel: String = "⚪C– ⚪R– ⚪? ⚪M~–"
     @Published private(set) var statusBarAttributedTitle: NSAttributedString = MonitorModel.makeAttributedStatusBarLabel("⚪C– ⚪R– ⚪? ⚪M~–")
 
-    /// Bir saniyede bir kez güncellenen birleşik sistem göstergeleri.
+    /// Yaklaşık üç saniyede bir güncellenen birleşik sistem göstergeleri (`Timer.publish` ile uyumlu).
     @Published private(set) var systemMetrics: SystemMetricsSnapshot = .placeholder
 
     private var timerCancellable: AnyCancellable?
@@ -128,7 +128,17 @@ final class MonitorModel: ObservableObject {
         }
     }
 
-    private static func statusDotImage(color: NSColor, diameter: CGFloat) -> NSImage {
+    /// Emoji başına tek `NSImage` (menü çubuğu tiklerinde yeniden tahsisi azaltır).
+    private static var statusDotImageCache: [Character: NSImage] = [:]
+
+    private static func statusDotImage(for ch: Character, color: NSColor, diameter: CGFloat) -> NSImage {
+        if let cached = statusDotImageCache[ch] { return cached }
+        let img = renderStatusDotImage(color: color, diameter: diameter)
+        statusDotImageCache[ch] = img
+        return img
+    }
+
+    private static func renderStatusDotImage(color: NSColor, diameter: CGFloat) -> NSImage {
         NSImage(size: NSSize(width: diameter, height: diameter), flipped: false) { rect in
             color.setFill()
             let inset: CGFloat = 0.35
@@ -150,7 +160,7 @@ final class MonitorModel: ObservableObject {
     private static func attributedStatusDot(replacing ch: Character, textFont: NSFont) -> NSAttributedString {
         let d = statusDotDiameterPoints
         let attachment = NSTextAttachment()
-        attachment.image = statusDotImage(color: statusDotNSColor(for: ch), diameter: d)
+        attachment.image = statusDotImage(for: ch, color: statusDotNSColor(for: ch), diameter: d)
         attachment.bounds = statusDotAttachmentBounds(textFont: textFont, diameter: d)
         let piece = NSMutableAttributedString(attachment: attachment)
         piece.addAttribute(.font, value: textFont, range: NSRange(location: 0, length: piece.length))

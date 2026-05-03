@@ -10,7 +10,6 @@
 		F10000000000000000000021 /* MenuBarMonitorApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000001 /* MenuBarMonitorApp.swift */; };
 		F10000000000000000000022 /* MonitorModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000002 /* MonitorModel.swift */; };
 		F10000000000000000000023 /* MonitorDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000003 /* MonitorDetailView.swift */; };
-		F10000000000000000000024 /* BandwidthMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000004 /* BandwidthMonitor.swift */; };
 		F10000000000000000000025 /* CPUStats.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000005 /* CPUStats.swift */; };
 		F10000000000000000000026 /* MemoryPressureMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000007 /* MemoryPressureMonitor.swift */; };
 		F10000000000000000000027 /* SystemMetrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000008 /* SystemMetrics.swift */; };
@@ -24,7 +23,6 @@
 		F10000000000000000000001 /* MenuBarMonitorApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarMonitorApp.swift; sourceTree = "<group>"; };
 		F10000000000000000000002 /* MonitorModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonitorModel.swift; sourceTree = "<group>"; };
 		F10000000000000000000003 /* MonitorDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonitorDetailView.swift; sourceTree = "<group>"; };
-		F10000000000000000000004 /* BandwidthMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BandwidthMonitor.swift; sourceTree = "<group>"; };
 		F10000000000000000000005 /* CPUStats.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CPUStats.swift; sourceTree = "<group>"; };
 		F10000000000000000000007 /* MemoryPressureMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryPressureMonitor.swift; sourceTree = "<group>"; };
 		F10000000000000000000008 /* SystemMetrics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemMetrics.swift; sourceTree = "<group>"; };
@@ -60,7 +58,6 @@
 				F10000000000000000000001 /* MenuBarMonitorApp.swift */,
 				F10000000000000000000002 /* MonitorModel.swift */,
 				F10000000000000000000003 /* MonitorDetailView.swift */,
-				F10000000000000000000004 /* BandwidthMonitor.swift */,
 				F10000000000000000000005 /* CPUStats.swift */,
 				F10000000000000000000007 /* MemoryPressureMonitor.swift */,
 				F10000000000000000000008 /* SystemMetrics.swift */,
@@ -142,7 +139,6 @@
 				F10000000000000000000021 /* MenuBarMonitorApp.swift in Sources */,
 				F10000000000000000000022 /* MonitorModel.swift in Sources */,
 				F10000000000000000000023 /* MonitorDetailView.swift in Sources */,
-				F10000000000000000000024 /* BandwidthMonitor.swift in Sources */,
 				F10000000000000000000025 /* CPUStats.swift in Sources */,
 				F10000000000000000000026 /* MemoryPressureMonitor.swift in Sources */,
 				F10000000000000000000027 /* SystemMetrics.swift in Sources */,

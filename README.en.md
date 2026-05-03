@@ -94,6 +94,13 @@ open "$HOME/Desktop/MenuBarMonitor.app"
 - Right click: launch at login + quit
 - The app does not show in the Dock; it lives in the menu bar
 
+## Powerful actions (please read)
+
+These detail-panel actions can cause **irreversible data loss** or require **administrator approval**:
+
+- **RAM purge (`purge`)**: macOS prompts for an administrator password and temporarily affects memory behavior. Save your work in other apps first.
+- **Quit all regular user apps**: After confirmation, every regular (Dock‑visible) app except Finder is terminated; unsaved documents may be lost.
+
 ## Sharing the `.app` safely (release)
 
 The included script in one step:
@@ -121,6 +128,19 @@ shasum -a 256 MenuBarMonitor-v1.0.0.zip
 ```
 
 Compare the output with the value in the `.sha256.txt` file.
+
+### Notarization (optional)
+
+For distribution outside the Mac App Store, **notarizing** the zip or `.app` you ship and **stapling** the ticket reduces Gatekeeper friction. `release.sh` does not automate this; you need an Apple Developer account and `notarytool` credentials (for example a keychain profile).
+
+High-level flow (adapt paths and filenames to your setup):
+
+1. Produce a Release `.app` (`./scripts/release.sh …` or `xcodebuild`).
+2. Create a distributable archive (often a zip is enough): `ditto -c -k --keepParent MenuBarMonitor.app MenuBarMonitor.zip`
+3. Submit: `xcrun notarytool submit MenuBarMonitor.zip --keychain-profile "AC_PASSWORD_NOTARY" --wait`
+4. On success, staple the same zip or the `.app`: `xcrun stapler staple MenuBarMonitor.zip` (or staple the `.app` directly)
+
+Details: Apple’s [Notarizing macOS software](https://developer.apple.com/documentation/security/notarizing_macos_software_before_distribution) documentation.
 
 ## FAQ / troubleshooting
 

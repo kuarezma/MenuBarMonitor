@@ -9,6 +9,8 @@ set -euo pipefail
 # - Creates distributable zip
 # - Generates SHA256 checksum file
 # - Optionally creates GitHub Release (if gh is installed/authenticated)
+#
+# Notarization / stapler is not run here; see README.md (Release > Notarization).
 
 if [[ $# -lt 1 ]]; then
   echo "Usage: $0 <version-tag>"

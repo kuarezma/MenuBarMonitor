@@ -95,6 +95,13 @@ open "$HOME/Desktop/MenuBarMonitor.app"
 - Sağ tık: otomatik açıl seçeneği + çıkış
 - Uygulama Dock'ta görünmez; menü çubuğunda çalışır
 
+## Güçlü işlemler (dikkat)
+
+Detay panelindeki bu eylemler geri alınamaz veri kaybına yol açabilir veya yönetici onayı ister:
+
+- **RAM temizle (`purge`)**: macOS yönetici parolası ister; sistem belleği davranışını geçici etkiler. Kaydetmediğiniz işleri kapatın.
+- **Tüm kullanıcı uygulamalarını kapat**: Onaydan sonra Finder dışındaki normal (Dock’ta görünen) uygulamalar sonlandırılır; kaydedilmemiş belgeler kaybolabilir.
+
 ## .app Dosyasını Güvenli Paylaşma (Release)
 
 Projede hazır gelen script ile tek komutta:
@@ -122,6 +129,19 @@ shasum -a 256 MenuBarMonitor-v1.0.0.zip
 ```
 
 Çıktıyı `.sha256.txt` içindeki değerle karşılaştırın.
+
+### Notarization (isteğe bağlı)
+
+Mağaza dışı dağıtımda kullanıcıların Gatekeeper uyarılarını azaltmak için Apple’a gönderilen zip veya `.app` paketini **notarize** edip sonucu pakete **staple** etmek iyi bir uygulamadır. `release.sh` bunu otomatik yapmaz; kendi Apple Developer hesabınız ve `notarytool` kimlik bilgileri gerekir.
+
+Özet akış (örnek — sürüm ve yolları kendinize göre uyarlayın):
+
+1. Release `.app` üretin (`./scripts/release.sh …` veya `xcodebuild` ile).
+2. Dağıtım arşivi oluşturun (çoğu zaman zip yeterli): `ditto -c -k --keepParent MenuBarMonitor.app MenuBarMonitor.zip`
+3. Gönderin: `xcrun notarytool submit MenuBarMonitor.zip --keychain-profile "AC_PASSWORD_NOTARY" --wait`
+4. Başarılıysa aynı zip’e veya `.app`’e damgalayın: `xcrun stapler staple MenuBarMonitor.zip` (veya doğrudan `.app` üzerinde)
+
+Ayrıntılar: Apple’ın [Notarizing macOS software](https://developer.apple.com/documentation/security/notarizing_macos_software_before_distribution) belgesi.
 
 ## Sık Sorulan / Sorun Giderme
 
