@@ -1,7 +1,7 @@
 import Darwin
 import Foundation
 
-/// Yaklaşık üç saniyelik örneklemede hesaplanan sistem göstergeleri (CPU, RAM, bellek vekili, termal, saat satırı).
+/// Yaklaşık üç saniyelik örneklemede hesaplanan sistem göstergeleri (CPU, RAM, bellek vekili, termal).
 struct SystemMetricsSnapshot {
     var overallCpuPercent: Double?
     var ramUsedPercent: Double?
@@ -12,16 +12,10 @@ struct SystemMetricsSnapshot {
     var thermalHeatLoadApprox: Int
     var thermalDisplayLabel: String
     var cpuCores: [CPUCoreDisplay]
-    var intelFrequencyText: String?
     var cpuFootnote: String
-    /// Intel: sysctl GHz metni; Apple Silicon: sabit açıklama satırı.
-    var clockPrimaryLine: String
-    /// Apple Silicon: P kümesi ortalaması ve tepe çekirdek; Intel’de nil olabilir.
-    var clockSecondaryLine: String?
     var ramFootnote: String
     var memoryProxyFootnote: String
     var thermalFootnote: String
-    var clockFootnote: String
 
     /// Menü çubuğu: CPU, RAM, termal kodu, bellek vekili; ağ yok (≤ ~22 karakter hedefi).
     var compactMenuBarLabel: String {
@@ -112,37 +106,6 @@ enum SystemMetrics {
         }
     }
 
-    private static func appleSiliconClockLines(cores: [CPUCoreDisplay]) -> (primary: String, secondary: String) {
-        let primary = L10n.t("clock.appleSilicon.primary")
-        let pCores = cores.filter { $0.label.hasPrefix("P") }
-        let perfMean: Double
-        if !pCores.isEmpty {
-            perfMean = pCores.reduce(0.0) { $0 + $1.usagePercent } / Double(pCores.count)
-        } else {
-            perfMean = CPUStats.overallCpuPercent(from: cores) ?? 0
-        }
-        let peak = cores.map(\.usagePercent).max() ?? 0
-        let secondary = String(format: L10n.t("clock.appleSilicon.secondaryFormat"), perfMean, peak)
-        return (primary, secondary)
-    }
-
-    private static func intelClockLine(intelText: String?, cores: [CPUCoreDisplay]) -> (primary: String, secondary: String?, footnote: String) {
-        if let t = intelText {
-            return (
-                String(format: L10n.t("clock.intel.primaryWithMHz"), t),
-                nil,
-                L10n.t("clock.intel.footnoteWithMHz")
-            )
-        }
-        let peak = cores.map(\.usagePercent).max() ?? 0
-        let sec = cores.isEmpty ? nil : String(format: L10n.t("clock.intel.secondaryPeak"), peak)
-        return (
-            L10n.t("clock.intel.primaryNoMHz"),
-            sec,
-            L10n.t("clock.intel.footnoteNoMHz")
-        )
-    }
-
     /// CPU örneklemi + tek `HOST_VM_INFO64` okuması + `MemoryPressureMonitor` vekili; ağ hariç.
     static func poll() -> SystemMetricsSnapshot {
         let cpu = CPUStats.poll()
@@ -161,21 +124,6 @@ enum SystemMetrics {
         let thermalState = ProcessInfo.processInfo.thermalState
         let thermal = thermalMapping(thermalState)
 
-        let clockPrimary: String
-        let clockSecondary: String?
-        let clockFootnote: String
-        if CPUStats.isAppleSilicon() {
-            let lines = appleSiliconClockLines(cores: cpu.cores)
-            clockPrimary = lines.primary
-            clockSecondary = lines.secondary
-            clockFootnote = L10n.t("clock.appleSilicon.footnote")
-        } else {
-            let intel = intelClockLine(intelText: cpu.intelFrequencyText, cores: cpu.cores)
-            clockPrimary = intel.primary
-            clockSecondary = intel.secondary
-            clockFootnote = intel.footnote
-        }
-
         return SystemMetricsSnapshot(
             overallCpuPercent: cpu.overallCpuPercent,
             ramUsedPercent: ram.pct,
@@ -184,14 +132,10 @@ enum SystemMetrics {
             thermalHeatLoadApprox: thermal.heat0to100,
             thermalDisplayLabel: thermal.displayLabel,
             cpuCores: cpu.cores,
-            intelFrequencyText: cpu.intelFrequencyText,
             cpuFootnote: cpu.footnote,
-            clockPrimaryLine: clockPrimary,
-            clockSecondaryLine: clockSecondary,
             ramFootnote: ram.footnote,
             memoryProxyFootnote: memPressure.footnote,
-            thermalFootnote: thermal.footnote,
-            clockFootnote: clockFootnote
+            thermalFootnote: thermal.footnote
         )
     }
 }
@@ -205,14 +149,10 @@ extension SystemMetricsSnapshot {
         thermalHeatLoadApprox: 0,
         thermalDisplayLabel: "—",
         cpuCores: [],
-        intelFrequencyText: nil,
         cpuFootnote: "",
-        clockPrimaryLine: "…",
-        clockSecondaryLine: nil,
         ramFootnote: "",
         memoryProxyFootnote: "",
-        thermalFootnote: "",
-        clockFootnote: ""
+        thermalFootnote: ""
     )
 
     /// Menü etiketindeki tek harfli termal kodun açıklaması.

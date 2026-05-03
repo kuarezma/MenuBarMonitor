@@ -101,24 +101,17 @@ enum CPUStats {
         return sum / Double(cores.count)
     }
 
-    /// Returns per-logical-CPU usage 0...100, optional Intel frequency string, and mean CPU % when available.
-    static func poll() -> (cores: [CPUCoreDisplay], intelFrequencyText: String?, footnote: String, overallCpuPercent: Double?) {
+    /// Returns per-logical-CPU usage 0...100, footnote, and mean CPU % when available.
+    static func poll() -> (cores: [CPUCoreDisplay], footnote: String, overallCpuPercent: Double?) {
         guard let current = takeSample() else {
-            return ([], nil, L10n.t("cpu.pollFailed"), nil)
+            return ([], L10n.t("cpu.pollFailed"), nil)
         }
         defer { lastSample = current }
 
         let intelHz = intelCPUFrequencyHz()
-        let intelText: String?
-        if let hz = intelHz {
-            let ghz = Double(hz) / 1_000_000_000.0
-            intelText = String(format: L10n.t("cpu.intelGHzFormat"), ghz)
-        } else {
-            intelText = nil
-        }
 
         guard let prev = lastSample else {
-            return ([], intelText, isAppleSilicon()
+            return ([], isAppleSilicon()
                 ? L10n.t("cpu.waitAppleSilicon")
                 : L10n.t("cpu.waitIntel"), nil)
         }
@@ -174,6 +167,6 @@ enum CPUStats {
         }
 
         let overall = overallCpuPercent(from: displays)
-        return (displays, intelText, footnote, overall)
+        return (displays, footnote, overall)
     }
 }

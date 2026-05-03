@@ -40,31 +40,6 @@ struct MonitorDetailView: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
 
-            if !CPUStats.isAppleSilicon() {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(L10n.t("detail.clockInfo"))
-                        .font(.subheadline.weight(.semibold))
-                    Text(m.clockPrimaryLine)
-                        .font(.caption)
-                        .foregroundStyle(.primary)
-                    if let sec = m.clockSecondaryLine, !sec.isEmpty {
-                        Text(sec)
-                            .font(.caption2)
-                            .foregroundStyle(.secondary)
-                    }
-                    if !m.clockFootnote.isEmpty {
-                        Text(m.clockFootnote)
-                            .font(.caption2)
-                            .foregroundStyle(.tertiary)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.vertical, 8)
-                .padding(.horizontal, 10)
-                .background(PopoverChrome.cardBackground, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
-            }
-
             Rectangle()
                 .fill(Color.white.opacity(0.14))
                 .frame(maxWidth: .infinity)

@@ -29,27 +29,17 @@
 "quitAll.confirmAction" = "Tümünü kapat";
 "quitAll.cancel" = "İptal";
 
-/* CPU / RAM / saat / bellek teknik metinleri */
+/* CPU / RAM / bellek teknik metinleri */
 "cpu.pollFailed" = "CPU örneklenemedi.";
 "cpu.waitAppleSilicon" = "Apple Silicon: işletim sistemi kullanıcı alanında çekirdek başına gerçek MHz sunmuyor; aşağıda yük yüzdeleri görünür.";
 "cpu.waitIntel" = "İlk örnek toplandı; yük bir sonraki güncellemede görünecek.";
 "cpu.footnote.appleSilicon" = "Apple Silicon: kullanıcı alanından güvenilir çekirdek MHz yok; yük % gösterilir.";
 "cpu.footnote.intelNoFreq" = "Bu makinede sysctl ile frekans okunamadı; yük % gösterilir.";
 "cpu.footnote.intelApprox" = "Intel: frekans sysctl ile kabaca; dinamik turbo farklı olabilir.";
-"cpu.intelGHzFormat" = "~%.2f GHz (sysctl)";
 
 "ram.noPhysicalMemory" = "Fiziksel bellek bilgisi yok.";
 "ram.usedLongFootnote" = "Kullanılan ≈ (active + wired + compressed_page_count) × sayfa boyutu / fiziksel bellek. Alanlar: active (aktif), wire (kablolu çekirdek), compressed_page_count (sıkıştırıcıdaki sayfalar). Inactive/free önbellek burada “kullanılmış” sayılmaz; Activity Monitor ile birebir aynı olmayabilir.";
 "ram.hostStatsUnavailable" = "HOST_VM_INFO64 alınamadı.";
-
-"clock.appleSilicon.primary" = "Dinamik hız: OS MHz yok";
-"clock.appleSilicon.secondaryFormat" = "P kümesi ort. %.0f%% · tepe çekirdek %.0f%%";
-"clock.appleSilicon.footnote" = "Apple Silicon’da kullanıcı alanından güvenilir çekirdek MHz yok; ikincil satır yük vekilidir.";
-"clock.intel.primaryWithMHz" = "Çekirdek (Intel/sysctl): %@";
-"clock.intel.footnoteWithMHz" = "sysctl hw.cpufrequency / _max; turbo ve anlık MHz farklı olabilir.";
-"clock.intel.secondaryPeak" = "Tepe çekirdek %.0f%%";
-"clock.intel.primaryNoMHz" = "Intel: sysctl ile MHz okunamadı";
-"clock.intel.footnoteNoMHz" = "Bu makinede frekans sysctl’de yok; ikincil satır tepe çekirdek yüküdür.";
 
 "memory.placeholderFootnote" = "Bu değerler HOST_VM_INFO64 (vm_statistics64) sayaçlarından türetilir; gerçek DRAM/birleşik bellek GB/s ölçümü değildir. Sayfa hatası, sayfa giriş/çıkışı ve sıkıştırma etkinliği ile serbest sayfa oranı birleştirilerek kabaca bir yük göstergesi üretilir.";
 "memory.vmReadFailedPrefix" = "VM istatistikleri okunamadı. ";
@@ -62,4 +52,3 @@
 "a11y.statusItemPrefix" = "Menü çubuğu izleyici";
 "a11y.statusItemHelp" = "CPU, RAM, termal durum ve bellek yoğunluğunu gösterir. Ayrıntı için tıklayın, menü için sağ tıklayın.";
 "detail.metricHelpHint" = "Teknik ayrıntılar";
-"detail.clockInfo" = "Saat / frekans";
