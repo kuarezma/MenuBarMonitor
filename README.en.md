@@ -20,7 +20,7 @@ It shows live CPU, RAM, thermal state, and memory pressure at a glance.
 - Colored status dots
 - Left click: detail panel
 - Right click:
-  - Launch at login (login item)
+  - `Launch at login` — open automatically when you log in (login item)
   - Quit
 - Follows system language: Turkish and English UI strings (`Localizable.strings`)
 - E‑ and P‑cluster loads on separate lines in the detail view
@@ -42,6 +42,9 @@ It shows live CPU, RAM, thermal state, and memory pressure at a glance.
 - `MenuBarMonitor/` — Swift sources, `Info.plist`, localization (`*.lproj`)
 - `MenuBarMonitor/Assets.xcassets` — `AppIcon.appiconset` (16–512 pt @1x/@2x PNG set for macOS)
 - `MenuBarMonitor.xcodeproj` — Xcode project
+- `LICENSE` — MIT license
+- `.github/workflows/ci.yml` — Release build on `main` (GitHub Actions)
+- `scripts/notarize.sh` — short guide for notarization / stapler commands
 
 To change the icon design, update the images in `AppIcon.appiconset` and rebuild; Xcode produces `AppIcon.icns` and `Assets.car`.
 

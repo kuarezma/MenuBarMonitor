@@ -28,6 +28,7 @@ final class StatusItemHostView: NSView {
 
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
+        textField.setAccessibilityElement(false)
         addSubview(textField)
     }
 
@@ -60,6 +61,12 @@ final class StatusItemHostView: NSView {
             width: max(0, w - padX * 2),
             height: ceil(textRect.height)
         )
+
+        let summary = attributedTitle.string
+        setAccessibilityElement(true)
+        setAccessibilityRole(.staticText)
+        setAccessibilityLabel("\(L10n.t("a11y.statusItemPrefix")), \(summary)")
+        setAccessibilityHelp(L10n.t("a11y.statusItemHelp"))
     }
 
     override func mouseDown(with event: NSEvent) {

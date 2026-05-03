@@ -101,6 +101,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             }
         } catch {
             NSSound.beep()
+            let alert = NSAlert()
+            alert.messageText = L10n.t("loginItem.errorTitle")
+            alert.informativeText = L10n.t("loginItem.errorMessage")
+            alert.alertStyle = .warning
+            alert.addButton(withTitle: L10n.t("common.ok"))
+            alert.runModal()
         }
     }
 

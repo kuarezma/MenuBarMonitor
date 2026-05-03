@@ -20,7 +20,7 @@ CPU, RAM, termal durum ve bellek yoğunluğu bilgisini canlı gösterir.
 - Renkli durum noktaları
 - Sol tık ile detay paneli
 - Sağ tık ile:
-  - `Otomatik açıl` (login item)
+  - `Otomatik açıl` — girişte otomatik başlatma (login item)
   - `Çık`
 - Sistem dili algılama: Türkçe ve İngilizce arayüz metinleri (`Localizable.strings`)
 - E/P çekirdek yüklerini ayrı satırlarda görüntüleme
@@ -43,6 +43,9 @@ CPU, RAM, termal durum ve bellek yoğunluğu bilgisini canlı gösterir.
 - `MenuBarMonitor/` — Swift kaynakları, `Info.plist`, yerelleştirme (`*.lproj`)
 - `MenuBarMonitor/Assets.xcassets` — `AppIcon.appiconset` (macOS için 16–512 pt @1x/@2x PNG seti)
 - `MenuBarMonitor.xcodeproj` — Xcode projesi
+- `LICENSE` — MIT lisansı
+- `.github/workflows/ci.yml` — `main` dalında Release derlemesi (GitHub Actions)
+- `scripts/notarize.sh` — notarization / stapler adımları için kısa rehber
 
 İkon tasarımını değiştirmek için `AppIcon.appiconset` içindeki görselleri güncelleyip projeyi yeniden derlemeniz yeterlidir; Xcode derlemesi `AppIcon.icns` ve `Assets.car` üretir.
 

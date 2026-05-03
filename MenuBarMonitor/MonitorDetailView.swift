@@ -41,6 +41,29 @@ struct MonitorDetailView: View {
                 }
             }
 
+            VStack(alignment: .leading, spacing: 4) {
+                Text(L10n.t("detail.clockInfo"))
+                    .font(.subheadline.weight(.semibold))
+                Text(m.clockPrimaryLine)
+                    .font(.caption)
+                    .foregroundStyle(.primary)
+                if let sec = m.clockSecondaryLine, !sec.isEmpty {
+                    Text(sec)
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
+                if !m.clockFootnote.isEmpty {
+                    Text(m.clockFootnote)
+                        .font(.caption2)
+                        .foregroundStyle(.tertiary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.vertical, 8)
+            .padding(.horizontal, 10)
+            .background(PopoverChrome.cardBackground, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+
             Rectangle()
                 .fill(Color.white.opacity(0.14))
                 .frame(maxWidth: .infinity)
@@ -85,31 +108,35 @@ struct MonitorDetailView: View {
                 kind: .cpu,
                 title: L10n.t("detail.cpuUsage"),
                 value: pctOrDash(m.overallCpuPercent),
-                color: loadColor(m.overallCpuPercent)
+                color: loadColor(m.overallCpuPercent),
+                footnote: m.cpuFootnote
             ),
             TopFiveRow(
                 kind: .ram,
                 title: L10n.t("detail.ramUsage"),
                 value: pctOrDash(m.ramUsedPercent),
-                color: loadColor(m.ramUsedPercent)
+                color: loadColor(m.ramUsedPercent),
+                footnote: m.ramFootnote
             ),
             TopFiveRow(
                 kind: .memoryPressure,
                 title: L10n.t("detail.memoryPressure"),
                 value: pctMemoryProxy(m.memoryProxyPercent),
-                color: loadColor(m.memoryProxyPercent)
+                color: loadColor(m.memoryProxyPercent),
+                footnote: m.memoryProxyFootnote
             ),
             TopFiveRow(
                 kind: .thermal,
                 title: L10n.t("detail.thermalState"),
                 value: thermalValueLine,
-                color: thermalColor(m.thermalState)
+                color: thermalColor(m.thermalState),
+                footnote: m.thermalFootnote
             ),
         ]
     }
 
     private var thermalValueLine: String {
-        m.thermalLabelTR
+        m.thermalDisplayLabel
     }
 
     private var corePairRows: [CorePairRow] {
@@ -144,10 +171,19 @@ struct MonitorDetailView: View {
 
     private func standardMetricCell(_ row: TopFiveRow) -> some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text(row.title)
-                .font(.caption)
-                .foregroundStyle(.secondary)
-                .lineLimit(1)
+            HStack(alignment: .firstTextBaseline, spacing: 4) {
+                Text(row.title)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                if !row.footnote.isEmpty {
+                    Image(systemName: "info.circle")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary.opacity(0.85))
+                        .accessibilityLabel(L10n.t("detail.metricHelpHint"))
+                        .help(row.footnote)
+                }
+            }
             Text(row.value)
                 .font(.system(size: 20, weight: .bold, design: .rounded))
                 .foregroundStyle(row.color)
@@ -163,10 +199,19 @@ struct MonitorDetailView: View {
     private func ramUsageCell(_ row: TopFiveRow) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             HStack(alignment: .firstTextBaseline, spacing: 8) {
-                Text(row.title)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(1)
+                HStack(alignment: .firstTextBaseline, spacing: 4) {
+                    Text(row.title)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                    if !row.footnote.isEmpty {
+                        Image(systemName: "info.circle")
+                            .font(.caption2)
+                            .foregroundStyle(.secondary.opacity(0.85))
+                            .accessibilityLabel(L10n.t("detail.metricHelpHint"))
+                            .help(row.footnote)
+                    }
+                }
                 Spacer(minLength: 4)
                 Button {
                     runRamPurge()
@@ -420,6 +465,7 @@ private struct TopFiveRow: Identifiable {
     let title: String
     let value: String
     let color: Color
+    let footnote: String
 }
 
 private struct CorePairRow {

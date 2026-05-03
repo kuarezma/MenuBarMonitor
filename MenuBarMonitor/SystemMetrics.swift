@@ -1,7 +1,7 @@
 import Darwin
 import Foundation
 
-/// Tek saniyelik örneklemde hesaplanan “MacBook akıcılığı” göstergeleri (CPU, RAM, bellek vekili, termal, saat satırı).
+/// Yaklaşık üç saniyelik örneklemede hesaplanan sistem göstergeleri (CPU, RAM, bellek vekili, termal, saat satırı).
 struct SystemMetricsSnapshot {
     var overallCpuPercent: Double?
     var ramUsedPercent: Double?
@@ -10,18 +10,18 @@ struct SystemMetricsSnapshot {
     var thermalState: ProcessInfo.ThermalState
     /// Termal duruma göre kabaca “ısı yükü” 0…100 (°C değil).
     var thermalHeatLoadApprox: Int
-    var thermalLabelTR: String
+    var thermalDisplayLabel: String
     var cpuCores: [CPUCoreDisplay]
     var intelFrequencyText: String?
     var cpuFootnote: String
     /// Intel: sysctl GHz metni; Apple Silicon: sabit açıklama satırı.
-    var clockPrimaryTR: String
+    var clockPrimaryLine: String
     /// Apple Silicon: P kümesi ortalaması ve tepe çekirdek; Intel’de nil olabilir.
-    var clockSecondaryTR: String?
-    var ramFootnoteTR: String
-    var memoryProxyFootnoteTR: String
-    var thermalFootnoteTR: String
-    var clockFootnoteTR: String
+    var clockSecondaryLine: String?
+    var ramFootnote: String
+    var memoryProxyFootnote: String
+    var thermalFootnote: String
+    var clockFootnote: String
 
     /// Menü çubuğu: CPU, RAM, termal kodu, bellek vekili; ağ yok (≤ ~22 karakter hedefi).
     var compactMenuBarLabel: String {
@@ -65,7 +65,7 @@ enum SystemMetrics {
 
     private static func ramUsedPercent(vm: vm_statistics64, physical: UInt64, pageSize: vm_size_t) -> (pct: Double?, footnote: String) {
         guard physical > 0 else {
-            return (nil, "Fiziksel bellek bilgisi yok.")
+            return (nil, L10n.t("ram.noPhysicalMemory"))
         }
         let ps = UInt64(pageSize)
         let active = UInt64(vm.active_count)
@@ -74,14 +74,10 @@ enum SystemMetrics {
         let usedPages = active &+ wired &+ compressedPages
         let usedBytes = usedPages &* ps
         let pct = min(100.0, max(0.0, Double(usedBytes) / Double(physical) * 100.0))
-        let footnote =
-            "Kullanılan ≈ (active + wired + compressed_page_count) × sayfa boyutu / fiziksel bellek. " +
-            "Alanlar: active (aktif), wire (kablolu çekirdek), compressed_page_count (sıkıştırıcıdaki sayfalar). " +
-            "Inactive/free önbellek burada “kullanılmış” sayılmaz; Activity Monitor ile birebir aynı olmayabilir."
-        return (pct, footnote)
+        return (pct, L10n.t("ram.usedLongFootnote"))
     }
 
-    private static func thermalMapping(_ state: ProcessInfo.ThermalState) -> (labelTR: String, heat0to100: Int, footnote: String) {
+    private static func thermalMapping(_ state: ProcessInfo.ThermalState) -> (displayLabel: String, heat0to100: Int, footnote: String) {
         switch state {
         case .nominal:
             return (
@@ -117,7 +113,7 @@ enum SystemMetrics {
     }
 
     private static func appleSiliconClockLines(cores: [CPUCoreDisplay]) -> (primary: String, secondary: String) {
-        let primary = "Dinamik hız: OS MHz yok"
+        let primary = L10n.t("clock.appleSilicon.primary")
         let pCores = cores.filter { $0.label.hasPrefix("P") }
         let perfMean: Double
         if !pCores.isEmpty {
@@ -126,17 +122,25 @@ enum SystemMetrics {
             perfMean = CPUStats.overallCpuPercent(from: cores) ?? 0
         }
         let peak = cores.map(\.usagePercent).max() ?? 0
-        let secondary = String(format: "P kümesi ort. %.0f%% · tepe çekirdek %.0f%%", perfMean, peak)
+        let secondary = String(format: L10n.t("clock.appleSilicon.secondaryFormat"), perfMean, peak)
         return (primary, secondary)
     }
 
     private static func intelClockLine(intelText: String?, cores: [CPUCoreDisplay]) -> (primary: String, secondary: String?, footnote: String) {
         if let t = intelText {
-            return ("Çekirdek (Intel/sysctl): \(t)", nil, "sysctl hw.cpufrequency / _max; turbo ve anlık MHz farklı olabilir.")
+            return (
+                String(format: L10n.t("clock.intel.primaryWithMHz"), t),
+                nil,
+                L10n.t("clock.intel.footnoteWithMHz")
+            )
         }
         let peak = cores.map(\.usagePercent).max() ?? 0
-        let sec = cores.isEmpty ? nil : String(format: "Tepe çekirdek %.0f%%", peak)
-        return ("Intel: sysctl ile MHz okunamadı", sec, "Bu makinede frekans sysctl’de yok; ikincil satır tepe çekirdek yüküdür.")
+        let sec = cores.isEmpty ? nil : String(format: L10n.t("clock.intel.secondaryPeak"), peak)
+        return (
+            L10n.t("clock.intel.primaryNoMHz"),
+            sec,
+            L10n.t("clock.intel.footnoteNoMHz")
+        )
     }
 
     /// CPU örneklemi + tek `HOST_VM_INFO64` okuması + `MemoryPressureMonitor` vekili; ağ hariç.
@@ -151,7 +155,7 @@ enum SystemMetrics {
         if let v = vmCur {
             ram = ramUsedPercent(vm: v, physical: physical, pageSize: psize)
         } else {
-            ram = (nil, "HOST_VM_INFO64 alınamadı.")
+            ram = (nil, L10n.t("ram.hostStatsUnavailable"))
         }
 
         let thermalState = ProcessInfo.processInfo.thermalState
@@ -164,7 +168,7 @@ enum SystemMetrics {
             let lines = appleSiliconClockLines(cores: cpu.cores)
             clockPrimary = lines.primary
             clockSecondary = lines.secondary
-            clockFootnote = "Apple Silicon’da kullanıcı alanından güvenilir çekirdek MHz yok; ikincil satır yük vekilidir."
+            clockFootnote = L10n.t("clock.appleSilicon.footnote")
         } else {
             let intel = intelClockLine(intelText: cpu.intelFrequencyText, cores: cpu.cores)
             clockPrimary = intel.primary
@@ -178,16 +182,16 @@ enum SystemMetrics {
             memoryProxyPercent: memPressure.proxyPercent,
             thermalState: thermalState,
             thermalHeatLoadApprox: thermal.heat0to100,
-            thermalLabelTR: thermal.labelTR,
+            thermalDisplayLabel: thermal.displayLabel,
             cpuCores: cpu.cores,
             intelFrequencyText: cpu.intelFrequencyText,
             cpuFootnote: cpu.footnote,
-            clockPrimaryTR: clockPrimary,
-            clockSecondaryTR: clockSecondary,
-            ramFootnoteTR: ram.footnote,
-            memoryProxyFootnoteTR: memPressure.footnote,
-            thermalFootnoteTR: thermal.footnote,
-            clockFootnoteTR: clockFootnote
+            clockPrimaryLine: clockPrimary,
+            clockSecondaryLine: clockSecondary,
+            ramFootnote: ram.footnote,
+            memoryProxyFootnote: memPressure.footnote,
+            thermalFootnote: thermal.footnote,
+            clockFootnote: clockFootnote
         )
     }
 }
@@ -199,21 +203,20 @@ extension SystemMetricsSnapshot {
         memoryProxyPercent: 0,
         thermalState: .nominal,
         thermalHeatLoadApprox: 0,
-        thermalLabelTR: "—",
+        thermalDisplayLabel: "—",
         cpuCores: [],
         intelFrequencyText: nil,
         cpuFootnote: "",
-        clockPrimaryTR: "…",
-        clockSecondaryTR: nil,
-        ramFootnoteTR: "",
-        memoryProxyFootnoteTR: "",
-        thermalFootnoteTR: "",
-        clockFootnoteTR: ""
+        clockPrimaryLine: "…",
+        clockSecondaryLine: nil,
+        ramFootnote: "",
+        memoryProxyFootnote: "",
+        thermalFootnote: "",
+        clockFootnote: ""
     )
 
     /// Menü etiketindeki tek harfli termal kodun açıklaması.
-    static let menuThermalLegendTR =
-        L10n.t("menu.thermalLegend")
+    static let menuThermalLegend = L10n.t("menu.thermalLegend")
 }
 
 enum L10n {

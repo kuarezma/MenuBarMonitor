@@ -1,3 +1,4 @@
+"common.ok" = "OK";
 "menu.autoLaunch" = "Launch at login";
 "menu.quit" = "Quit";
 "detail.liveSystem" = "Live System";
@@ -27,3 +28,38 @@
 "quitAll.confirmMessage" = "All regular (Dock) applications will be asked to quit. Unsaved changes in other apps may prompt you to save.";
 "quitAll.confirmAction" = "Quit all";
 "quitAll.cancel" = "Cancel";
+
+/* CPU / RAM / clock / memory technical copy */
+"cpu.pollFailed" = "Could not sample CPU.";
+"cpu.waitAppleSilicon" = "Apple Silicon: the OS does not expose per-core MHz in user space; load percentages appear below.";
+"cpu.waitIntel" = "First sample collected; load will appear on the next update.";
+"cpu.footnote.appleSilicon" = "Apple Silicon: reliable per-core MHz is not available from user space; load % is shown.";
+"cpu.footnote.intelNoFreq" = "Frequency could not be read via sysctl on this Mac; load % is shown.";
+"cpu.footnote.intelApprox" = "Intel: frequency from sysctl is approximate; dynamic turbo may differ.";
+"cpu.intelGHzFormat" = "~%.2f GHz (sysctl)";
+
+"ram.noPhysicalMemory" = "Physical memory size is unavailable.";
+"ram.usedLongFootnote" = "“Used” ≈ (active + wired + compressed_page_count) × page size / physical RAM. Fields: active, wire (wired kernel), compressed_page_count (compressor). Inactive/free cache is not counted as “used” here; values may not match Activity Monitor exactly.";
+"ram.hostStatsUnavailable" = "HOST_VM_INFO64 could not be read.";
+
+"clock.appleSilicon.primary" = "Dynamic speed: no OS MHz";
+"clock.appleSilicon.secondaryFormat" = "P cluster avg %.0f%% · peak core %.0f%%";
+"clock.appleSilicon.footnote" = "Apple Silicon: reliable per-core MHz is not available from user space; the second line is a load proxy.";
+"clock.intel.primaryWithMHz" = "Core (Intel/sysctl): %@";
+"clock.intel.footnoteWithMHz" = "sysctl hw.cpufrequency / hw.cpufrequency_max; turbo and instantaneous MHz can differ.";
+"clock.intel.secondaryPeak" = "Peak core %.0f%%";
+"clock.intel.primaryNoMHz" = "Intel: MHz not available via sysctl";
+"clock.intel.footnoteNoMHz" = "Frequency is not exposed by sysctl on this Mac; the second line is peak core load.";
+
+"memory.placeholderFootnote" = "These values are derived from HOST_VM_INFO64 (vm_statistics64) counters; they are not measured DRAM/unified-memory GB/s throughput. Page faults, pageins/outs, compression activity and free-page ratio are blended into a rough load indicator.";
+"memory.vmReadFailedPrefix" = "VM statistics could not be read. ";
+"memory.firstSampleIntro" = "First sample collected; rates update on the next refresh. ";
+"memory.detailFootnote" = "Approximate indicator: deltas of HOST_VM_INFO64 (vm_statistics64) counters (page faults, pageins/outs, compression, etc.) are combined with active+wired vs free pages. This is not measured memory bandwidth (GB/s), including on Apple Silicon; it is a rough unified-memory-subsystem load proxy.";
+
+"loginItem.errorTitle" = "Could not update";
+"loginItem.errorMessage" = "The launch at login setting could not be changed. Try again in System Settings > General > Login Items & Extensions.";
+
+"a11y.statusItemPrefix" = "Menu bar monitor";
+"a11y.statusItemHelp" = "Shows CPU, RAM, thermal state and memory pressure. Click for details, right-click for the menu.";
+"detail.metricHelpHint" = "Technical details";
+"detail.clockInfo" = "Clock / frequency";

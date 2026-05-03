@@ -63,19 +63,15 @@ enum MemoryPressureMonitor {
         return min(100, 100 * x / (1 + x))
     }
 
-    /// `currentVM` verilirse ekstra Mach okuma yapılmaz (saniyede tek `HOST_VM_INFO64` ile uyum).
+    /// `currentVM` verilirse ekstra Mach okuma yapılmaz (`SystemMetrics.poll` ile aynı `HOST_VM_INFO64` örneği paylaşımı).
     static func poll(currentVM: vm_statistics64? = nil) -> PollResult {
-        let placeholderFootnote = """
-        Bu değerler `HOST_VM_INFO64` (vm_statistics64) sayaçlarından türetilir; gerçek DRAM/\
-        birleşik bellek GB/s ölçümü değildir. Sayfa hatası, sayfa giriş/çıkışı ve sıkıştırma \
-        etkinliği ile serbest sayfa oranı birleştirilerek kabaca bir yük göstergesi üretilir.
-        """
+        let placeholderFootnote = L10n.t("memory.placeholderFootnote")
 
         guard let cur = currentVM ?? readHostVMInfo64() else {
             return PollResult(
                 proxyPercent: 0,
                 shortLabel: "M~—",
-                footnote: "VM istatistikleri okunamadı. " + placeholderFootnote,
+                footnote: L10n.t("memory.vmReadFailedPrefix") + placeholderFootnote,
                 pressureHeuristicPercent: 0,
                 pageinsPerSec: 0,
                 pageoutsPerSec: 0,
@@ -99,7 +95,7 @@ enum MemoryPressureMonitor {
             return PollResult(
                 proxyPercent: 0,
                 shortLabel: "M~…",
-                footnote: "İlk örnek toplandı; bir sonraki saniyede oranlar güncellenir. " + placeholderFootnote,
+                footnote: L10n.t("memory.firstSampleIntro") + placeholderFootnote,
                 pressureHeuristicPercent: 0,
                 pageinsPerSec: 0,
                 pageoutsPerSec: 0,
@@ -158,12 +154,7 @@ enum MemoryPressureMonitor {
         let proxy = min(100, max(0, 0.58 * activityBlend + 0.42 * pressureHeuristicPercent))
         let short = String(format: "M~%.0f%%", proxy)
 
-        let footnote = """
-        Yaklaşık gösterge: `HOST_VM_INFO64` (`vm_statistics64`) sayaç deltaları (sayfa hatası, \
-        sayfa giriş/çıkışı, sıkıştırma vb.) ile serbest sayfaya karşı etkin+kablolu sayfa oranı \
-        birleştirilir. Bu, Apple Silicon / M serisi dahil **ölçülmüş bellek bant genişliği (GB/s) \
-        değildir**; yalnızca bellek alt sistemi yükünün kabaca birleşik bir vekilidir.
-        """
+        let footnote = L10n.t("memory.detailFootnote")
 
         return PollResult(
             proxyPercent: proxy,

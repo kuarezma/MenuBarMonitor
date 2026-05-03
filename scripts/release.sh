@@ -10,7 +10,7 @@ set -euo pipefail
 # - Generates SHA256 checksum file
 # - Optionally creates GitHub Release (if gh is installed/authenticated)
 #
-# Notarization / stapler is not run here; see README.md (Release > Notarization).
+# Notarization / stapler is not run here; see README.md (Release > Notarization) and scripts/notarize.sh.
 
 if [[ $# -lt 1 ]]; then
   echo "Usage: $0 <version-tag>"

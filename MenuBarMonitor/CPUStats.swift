@@ -1,4 +1,5 @@
 import Darwin
+import Foundation
 
 struct CPUSample: Equatable {
     let ticksPerCPU: [[UInt32]]
@@ -103,7 +104,7 @@ enum CPUStats {
     /// Returns per-logical-CPU usage 0...100, optional Intel frequency string, and mean CPU % when available.
     static func poll() -> (cores: [CPUCoreDisplay], intelFrequencyText: String?, footnote: String, overallCpuPercent: Double?) {
         guard let current = takeSample() else {
-            return ([], nil, "CPU ölçümü alınamadı.", nil)
+            return ([], nil, L10n.t("cpu.pollFailed"), nil)
         }
         defer { lastSample = current }
 
@@ -111,15 +112,15 @@ enum CPUStats {
         let intelText: String?
         if let hz = intelHz {
             let ghz = Double(hz) / 1_000_000_000.0
-            intelText = String(format: "~%.2f GHz (sysctl)", ghz)
+            intelText = String(format: L10n.t("cpu.intelGHzFormat"), ghz)
         } else {
             intelText = nil
         }
 
         guard let prev = lastSample else {
             return ([], intelText, isAppleSilicon()
-                ? "Apple Silicon: OS, çekirdek başına gerçek MHz sunmuyor; aşağıda yük yüzdeleri."
-                : "Örnek toplandı; bir sonraki güncellemede yük gösterilecek.", nil)
+                ? L10n.t("cpu.waitAppleSilicon")
+                : L10n.t("cpu.waitIntel"), nil)
         }
 
         let count = min(prev.ticksPerCPU.count, current.ticksPerCPU.count)
@@ -165,11 +166,11 @@ enum CPUStats {
 
         let footnote: String
         if isAppleSilicon() {
-            footnote = "Apple Silicon: gerçek çekirdek MHz kullanıcı alanında güvenilir değil; yük % gösterilir."
+            footnote = L10n.t("cpu.footnote.appleSilicon")
         } else if intelHz == nil {
-            footnote = "Bu makinede sysctl ile frekans okunamadı; yük % gösterilir."
+            footnote = L10n.t("cpu.footnote.intelNoFreq")
         } else {
-            footnote = "Intel: frekans sysctl ile kabaca; dinamik turbo farklı olabilir."
+            footnote = L10n.t("cpu.footnote.intelApprox")
         }
 
         let overall = overallCpuPercent(from: displays)
