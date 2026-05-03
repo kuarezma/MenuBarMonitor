@@ -31,6 +31,7 @@ final class MonitorModel: ObservableObject {
     @Published private(set) var systemMetrics: SystemMetricsSnapshot = .placeholder
 
     private var timerCancellable: AnyCancellable?
+    private var effectiveAppearanceObservation: NSKeyValueObservation?
 
     private init() {
         start()
@@ -38,9 +39,20 @@ final class MonitorModel: ObservableObject {
 
     func start() {
         timerCancellable?.cancel()
+        effectiveAppearanceObservation?.invalidate()
+        effectiveAppearanceObservation = nil
         timerCancellable = Timer.publish(every: 3.0, tolerance: 0.25, on: .main, in: .common)
             .autoconnect()
             .sink { [weak self] _ in self?.tick() }
+        effectiveAppearanceObservation = NSApplication.shared.observe(
+            \.effectiveAppearance,
+            options: [.new]
+        ) { [weak self] _, _ in
+            Task { @MainActor in
+                Self.statusDotImageCache.removeAll()
+                self?.tick()
+            }
+        }
         tick()
     }
 
