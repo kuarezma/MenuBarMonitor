@@ -66,10 +66,11 @@ cd MenuBarMonitor
 xcodebuild -project "MenuBarMonitor.xcodeproj" \
   -scheme "MenuBarMonitor" \
   -configuration Release \
+  -destination "generic/platform=macOS" \
   -derivedDataPath "/tmp/MenuBarMonitor-DD" build
 ```
 
-Apple Silicon dışında veya `destination` hatası alırsanız, yukarıdaki komuta şu satırı ekleyebilirsiniz: `-destination 'platform=macOS,arch=arm64,name=My Mac'`
+`generic/platform=macOS` hem Apple Silicon hem Intel üzerinde ve çoğu CI ortamında `My Mac` adına bağlı kalmadan derlemeyi seçer.
 
 Derlenen uygulama:
 

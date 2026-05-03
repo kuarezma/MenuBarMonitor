@@ -30,7 +30,7 @@ xcodebuild \
   -project "$PROJECT_ROOT/MenuBarMonitor.xcodeproj" \
   -scheme "MenuBarMonitor" \
   -configuration Release \
-  -destination "platform=macOS,arch=arm64,name=My Mac" \
+  -destination "generic/platform=macOS" \
   -derivedDataPath "$DERIVED_DATA" \
   build
 

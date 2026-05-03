@@ -65,10 +65,11 @@ cd MenuBarMonitor
 xcodebuild -project "MenuBarMonitor.xcodeproj" \
   -scheme "MenuBarMonitor" \
   -configuration Release \
+  -destination "generic/platform=macOS" \
   -derivedDataPath "/tmp/MenuBarMonitor-DD" build
 ```
 
-If you are not on Apple Silicon or you get a `destination` error, add this line to the command above: `-destination 'platform=macOS,arch=arm64,name=My Mac'`
+`generic/platform=macOS` picks a suitable macOS destination on both Apple Silicon and Intel, and avoids relying on a host named `My Mac` (helpful in CI).
 
 Built app path:
 
