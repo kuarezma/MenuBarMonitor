@@ -1,5 +1,7 @@
 # MenuBarMonitor
 
+**English:** [README in English](README.en.md)
+
 MenuBarMonitor, macOS menü çubuğunda çalışan hafif bir sistem izleyicisidir.
 CPU, RAM, termal durum ve bellek yoğunluğu bilgisini canlı gösterir.
 
@@ -37,6 +39,7 @@ CPU, RAM, termal durum ve bellek yoğunluğu bilgisini canlı gösterir.
 
 ## Proje yapısı (özet)
 
+- `README.md` / `README.en.md` — depo ana sayfası Türkçe README; İngilizce tam metin için üstteki bağlantı
 - `MenuBarMonitor/` — Swift kaynakları, `Info.plist`, yerelleştirme (`*.lproj`)
 - `MenuBarMonitor/Assets.xcassets` — `AppIcon.appiconset` (macOS için 16–512 pt @1x/@2x PNG seti)
 - `MenuBarMonitor.xcodeproj` — Xcode projesi
