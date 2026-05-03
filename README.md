@@ -13,6 +13,7 @@ CPU, RAM, termal durum ve bellek yoğunluğu bilgisini canlı gösterir.
 
 ## Özellikler
 
+- macOS uygulama simgesi: Finder, Giriş Öğeleri ve benzeri yerlerde görünen paket ikonu (`Assets.xcassets` → `AppIcon`)
 - Menü çubuğunda kısa canlı etiket: `Cxx Ryy n M~zz`
 - Renkli durum noktaları
 - Sol tık ile detay paneli
@@ -34,6 +35,14 @@ CPU, RAM, termal durum ve bellek yoğunluğu bilgisini canlı gösterir.
   - `k`: critical
 - `M~`: bellek yoğunluğu vekili (gerçek DRAM bant genişliği değildir)
 
+## Proje yapısı (özet)
+
+- `MenuBarMonitor/` — Swift kaynakları, `Info.plist`, yerelleştirme (`*.lproj`)
+- `MenuBarMonitor/Assets.xcassets` — `AppIcon.appiconset` (macOS için 16–512 pt @1x/@2x PNG seti)
+- `MenuBarMonitor.xcodeproj` — Xcode projesi
+
+İkon tasarımını değiştirmek için `AppIcon.appiconset` içindeki görselleri güncelleyip projeyi yeniden derlemeniz yeterlidir; Xcode derlemesi `AppIcon.icns` ve `Assets.car` üretir.
+
 ## Hızlı Başlangıç (Hiç Bilmeyenler İçin)
 
 ### Seçenek 1: GitHub'dan indirip Xcode ile çalıştır
@@ -54,9 +63,10 @@ cd MenuBarMonitor
 xcodebuild -project "MenuBarMonitor.xcodeproj" \
   -scheme "MenuBarMonitor" \
   -configuration Release \
-  -destination "platform=macOS,arch=arm64,name=My Mac" \
   -derivedDataPath "/tmp/MenuBarMonitor-DD" build
 ```
+
+Apple Silicon dışında veya `destination` hatası alırsanız, yukarıdaki komuta şu satırı ekleyebilirsiniz: `-destination 'platform=macOS,arch=arm64,name=My Mac'`
 
 Derlenen uygulama:
 
