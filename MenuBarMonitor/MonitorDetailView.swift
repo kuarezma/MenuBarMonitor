@@ -23,46 +23,47 @@ struct MonitorDetailView: View {
             Text(L10n.t("detail.liveSystem"))
                 .font(.headline)
 
-            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 8) {
-                ForEach(topFiveRows) { row in
-                    metricGridCell(row)
-                }
-            }
+            metricsFourCellGrid
 
             Text(L10n.t("detail.coreLoads"))
                 .font(.subheadline.weight(.semibold))
 
             VStack(spacing: 8) {
                 ForEach(corePairRows, id: \.slot) { row in
-                    HStack(spacing: 8) {
+                    HStack(alignment: .top, spacing: 8) {
                         coreCell(label: row.eLabel, value: row.eValue, color: row.eColor)
+                            .frame(maxWidth: .infinity, alignment: .leading)
                         coreCell(label: row.pLabel, value: row.pValue, color: row.pColor)
+                            .frame(maxWidth: .infinity, alignment: .leading)
                     }
                 }
             }
-
-            VStack(alignment: .leading, spacing: 4) {
-                Text(L10n.t("detail.clockInfo"))
-                    .font(.subheadline.weight(.semibold))
-                Text(m.clockPrimaryLine)
-                    .font(.caption)
-                    .foregroundStyle(.primary)
-                if let sec = m.clockSecondaryLine, !sec.isEmpty {
-                    Text(sec)
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
-                }
-                if !m.clockFootnote.isEmpty {
-                    Text(m.clockFootnote)
-                        .font(.caption2)
-                        .foregroundStyle(.tertiary)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-            }
             .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.vertical, 8)
-            .padding(.horizontal, 10)
-            .background(PopoverChrome.cardBackground, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+
+            if !CPUStats.isAppleSilicon() {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(L10n.t("detail.clockInfo"))
+                        .font(.subheadline.weight(.semibold))
+                    Text(m.clockPrimaryLine)
+                        .font(.caption)
+                        .foregroundStyle(.primary)
+                    if let sec = m.clockSecondaryLine, !sec.isEmpty {
+                        Text(sec)
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                    }
+                    if !m.clockFootnote.isEmpty {
+                        Text(m.clockFootnote)
+                            .font(.caption2)
+                            .foregroundStyle(.tertiary)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.vertical, 8)
+                .padding(.horizontal, 10)
+                .background(PopoverChrome.cardBackground, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+            }
 
             Rectangle()
                 .fill(Color.white.opacity(0.14))
@@ -139,6 +140,26 @@ struct MonitorDetailView: View {
         m.thermalDisplayLabel
     }
 
+    /// İki sütunlu özet: `LazyVGrid` satır yüksekliği farklarında hizayı bozduğu için eşit geniş `HStack` + üst hizalama.
+    private var metricsFourCellGrid: some View {
+        let rows = topFiveRows
+        return VStack(spacing: 8) {
+            HStack(alignment: .top, spacing: 8) {
+                metricGridCell(rows[0])
+                    .frame(maxWidth: .infinity, alignment: .topLeading)
+                metricGridCell(rows[1])
+                    .frame(maxWidth: .infinity, alignment: .topLeading)
+            }
+            HStack(alignment: .top, spacing: 8) {
+                metricGridCell(rows[2])
+                    .frame(maxWidth: .infinity, alignment: .topLeading)
+                metricGridCell(rows[3])
+                    .frame(maxWidth: .infinity, alignment: .topLeading)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
     private var corePairRows: [CorePairRow] {
         let eCores = m.cpuCores.filter { $0.label.hasPrefix("E") }
         let pCores = m.cpuCores.filter { $0.label.hasPrefix("P") }
@@ -175,13 +196,17 @@ struct MonitorDetailView: View {
                 Text(row.title)
                     .font(.caption)
                     .foregroundStyle(.secondary)
-                    .lineLimit(1)
+                    .lineLimit(2)
+                    .multilineTextAlignment(.leading)
+                    .minimumScaleFactor(0.82)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 if !row.footnote.isEmpty {
                     Image(systemName: "info.circle")
                         .font(.caption2)
                         .foregroundStyle(.secondary.opacity(0.85))
                         .accessibilityLabel(L10n.t("detail.metricHelpHint"))
                         .help(row.footnote)
+                        .layoutPriority(1)
                 }
             }
             Text(row.value)
@@ -198,20 +223,29 @@ struct MonitorDetailView: View {
 
     private func ramUsageCell(_ row: TopFiveRow) -> some View {
         VStack(alignment: .leading, spacing: 4) {
-            HStack(alignment: .firstTextBaseline, spacing: 8) {
-                HStack(alignment: .firstTextBaseline, spacing: 4) {
-                    Text(row.title)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
-                    if !row.footnote.isEmpty {
-                        Image(systemName: "info.circle")
-                            .font(.caption2)
-                            .foregroundStyle(.secondary.opacity(0.85))
-                            .accessibilityLabel(L10n.t("detail.metricHelpHint"))
-                            .help(row.footnote)
-                    }
+            HStack(alignment: .firstTextBaseline, spacing: 4) {
+                Text(row.title)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(2)
+                    .multilineTextAlignment(.leading)
+                    .minimumScaleFactor(0.82)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                if !row.footnote.isEmpty {
+                    Image(systemName: "info.circle")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary.opacity(0.85))
+                        .accessibilityLabel(L10n.t("detail.metricHelpHint"))
+                        .help(row.footnote)
+                        .layoutPriority(1)
                 }
+            }
+            HStack(alignment: .firstTextBaseline, spacing: 8) {
+                Text(row.value)
+                    .font(.system(size: 20, weight: .bold, design: .rounded))
+                    .foregroundStyle(row.color)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
                 Spacer(minLength: 4)
                 Button {
                     runRamPurge()
@@ -221,11 +255,6 @@ struct MonitorDetailView: View {
                 .disabled(ramPurgeBusy)
                 .buttonStyle(NeonActionButtonStyle(palette: .memoryCool, isDimmed: ramPurgeBusy, compact: true))
             }
-            Text(row.value)
-                .font(.system(size: 20, weight: .bold, design: .rounded))
-                .foregroundStyle(row.color)
-                .lineLimit(1)
-                .minimumScaleFactor(0.8)
             if let status = ramPurgeStatus, !status.isEmpty {
                 Text(status)
                     .font(.caption2)
